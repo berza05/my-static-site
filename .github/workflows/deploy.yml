@@ -10,17 +10,25 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
+      # Шаг 1: Checkout кода
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # Шаг 2: Setup Node.js (если нужно)
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-          cache: 'npm' # ЭТОТ КЭШ ДОЛЖЕН БЫТЬ ВЛОЖЕН ПОД 'with'
+          cache: 'npm'
 
-      # Шаг 3: Проверка HTML (мы удалили его, так как он был недоступен)
+      # Шаг 3: Проверка HTML (опционально)
+      - name: HTML Validation
+        uses: cyrilletuzi/validate-html@v4
+        with:
+          pattern: "**/*.html"
+          level: warning
 
+      # Шаг 4: Деплой на GitHub Pages
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
@@ -28,8 +36,9 @@ jobs:
           publish_dir: ./
           force_orphan: true
 
+      # Шаг 5: Уведомление о успешном деплое
       - name: Success notification
         if: success()
         run: |
           echo "Сайт успешно развернут на GitHub Pages!"
-          echo "URL: https://${{ github.repository_owner }}.github.io/my-static-site"
+          echo "URL: https://${{ github.repository_owner }}.github.io/my-staticsite"
